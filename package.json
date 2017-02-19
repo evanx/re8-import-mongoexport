@@ -1,5 +1,5 @@
 {
-  "name": "re8-import-mongoexport",
+  "name": "reimport",
   "version": "0.1.0",
   "description": "Containerizable utility to import mongo data into Redis.",
   "main": "lib/index.js",
@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/evanx/re8-import-mongoexport.git"
+    "url": "git+https://github.com/evanx/reimport.git"
   },
   "bugs": {
-    "url": "https://github.com/evanx/re8-import-mongoexport/issues"
+    "url": "https://github.com/evanx/reimport/issues"
   },
-  "homepage": "https://github.com/evanx/re8-import-mongoexport#readme"
+  "homepage": "https://github.com/evanx/reimport#readme"
 }

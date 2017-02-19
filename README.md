@@ -1,5 +1,5 @@
 
-# re8-import-mongoexport
+# reimport
 
 Containerizable utility to import Mongo data into Redis.
 
@@ -7,15 +7,17 @@ Containerizable utility to import Mongo data into Redis.
 
 We use `mongoexport` to export a collection from MongoDB into a file, where each line is a JSON object.
 
-We stream each line into a Redis list using https://github.com/evanx/line-lpush
+We stream each line into a Redis list using https://github.com/evanx/resplit
 
-This service then pops each line, extracts the primary key field, and sets in Redis.
+This service then pops each line, extracts a required unique ID field for the Redis key, and sets the JSON document in Redis according to a Redis key template with `{id}`
 
-For example we have `placeId` in the JSON object, and wish to store the document using the key `place:${placeId}:json`
+For example we have `place_id` in the JSON object, and wish to store the document using the key `place:${id}:json`
+
+This JSON is intended to be export to file using https://github.com/evanx/refile
 
 ## Config spec
 
-See `lib/spec.js` https://github.com/evanx/re8-import-mongoexport/blob/master/lib/spec.js
+See `lib/spec.js` https://github.com/evanx/reimport/blob/master/lib/spec.js
 ```javascript
 module.exports = {
     description: 'Containerizable utility to import mongoexport file into Redis.',
@@ -30,7 +32,7 @@ module.exports = {
         },
         idKey: {
             description: 'the ID key',
-            example: 'placeId'
+            example: 'place_id'
         },
         keyTemplate: {
             description: 'the Redis key template',
@@ -42,7 +44,7 @@ module.exports = {
         },
         busyq: {
             description: 'the pending list for brpoplpush',
-            example: 're8-import:busy:q'
+            example: 'reimport:busy:q'
         },
         outq: {
             description: 'the output key queue',
@@ -79,9 +81,9 @@ See https://github.com/evanx/redis-app-rpf
 
 You can build as follows:
 ```
-docker build -t re8-import-mongoexport https://github.com/evanx/re8-import-mongoexport.git
+docker build -t reimport https://github.com/evanx/reimport.git
 ```
-using https://github.com/evanx/re8-import-mongoexport/blob/master/Dockerfile
+using https://github.com/evanx/reimport/blob/master/Dockerfile
 
 ```
 FROM node:7.5.0
@@ -92,25 +94,25 @@ ENV NODE_ENV production
 CMD ["node", "--harmony", "lib/index.js"]
 ```
 
-See `test/demo.sh` https://github.com/evanx/re8-import-mongoexport/blob/master/test/demo.sh
+See `test/demo.sh` https://github.com/evanx/reimport/blob/master/test/demo.sh
 
 Builds:
-- isolated network `re8-import-network`
-- isolated Redis instance named `re8-import-redis`
-- this utility as `re8-import-instance`
+- isolated network `reimport-network`
+- isolated Redis instance named `reimport-redis`
+- this utility as `reimport-instance`
 
 #### Isolated test network
 
 First we create the isolated network:
 ```shell
-docker network create -d bridge re8-import-network
+docker network create -d bridge reimport-network
 ```
 
 #### Disposable Redis instance
 
 Then the Redis container on that network:
 ```
-redisContainer=`docker run --network=re8-import-network \
+redisContainer=`docker run --network=reimport-network \
     --name $redisName -d redis`
 redisHost=`docker inspect $redisContainer |
     grep '"IPAddress":' | tail -1 | sed 's/.*"\([0-9\.]*\)",/\1/'`
@@ -122,7 +124,7 @@ where we parse its IP number into `redisHost`
 We push an item to the input queue:
 ```
 redis-cli lpush resplit:q '{
-  "placeId": "ChIJV3iUI-PPdkgRGA7v4bhZPlU",
+  "place_id": "ChIJV3iUI-PPdkgRGA7v4bhZPlU",
   "formatted_address": "Blenheim Palace, Woodstock OX20 1PP, UK"
 }'
 ```
@@ -131,37 +133,47 @@ redis-cli lpush resplit:q '{
 
 We build a container image for this service:
 ```
-docker build -t re8-import-mongoexport https://github.com/evanx/re8-import-mongoexport.git
+docker build -t reimport https://github.com/evanx/reimport.git
 ```
 
 We interactively run the service on our test Redis container:
 ```
-docker build -t re8-import https://github.com/evanx/re8-import-mongoexport.git
-docker run --name re8-import-instance --rm -i \
-  --network=re8-import-network \
-  -e host=$redisHost \
+docker build -t reimport https://github.com/evanx/reimport.git
+docker run --name reimport-instance --rm -i \
+  --network=reimport-network \
+  -e redisHost=$redisHost \
+  -e idKey=place_id \
+  -e keyTemplate=place:{id}:json \
   -e inq=resplit:q \
   -e busyq=busy:q \
   -e outq=re8:key:q \
-  re8-import
+  reimport
 ```
 
 #### Verify results
 
-We print results:
+We check the lengths of the various queues:
 ```
+redis-cli -h $redisHost llen resplit:q | grep ^0$
+redis-cli -h $redisHost llen busy:q | grep ^0$
+redis-cli -h $redisHost llen re8:key:q | grep ^1$
+```
+
+We check that the key is pushed to the output queue:
+```
+redis-cli -h $redisHost lindex re8:key:q 0
 ```
 
 ```
-evan@dijkstra:~/re8-import-mongoexport$ sh test/demo.sh
+evan@dijkstra:~/reimport$ sh test/demo.sh
 ...
 ```
 
 #### Teardown
 
 ```
-docker rm -f re8-import-redis
-docker network rm re8-import-network
+docker rm -f reimport-redis
+docker network rm reimport-network
 ```
 
 ## Implementation
