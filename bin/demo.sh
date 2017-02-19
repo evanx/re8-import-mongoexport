@@ -45,11 +45,12 @@ removeNetwork() {
     re8-import
   sleep 2
   redis-cli -h $redisHost keys '*'
-  for key in `redis-cli -h $redisHost keys '*:q'`
-  do
-    echo $key
-    redis-cli -h $redisHost lrange $key 0 -1
+  redis-cli -h $redisHost llen resplit:q | grep ^0$
+  redis-cli -h $redisHost llen busy:q | grep ^0$
+  redis-cli -h $redisHost llen re8:key:q | grep ^1$
+  redis-cli -h $redisHost lindex re8:key:q 0
   done
   docker rm -f $redisName
   docker network rm $network
+  echo 'OK'
 )
