@@ -3,6 +3,8 @@
 
 Containerizable utility to import Mongo data into Redis.
 
+<img src="https://raw.githubusercontent.com/evanx/resplit/master/docs/readme/main.png"/>
+
 ## Use case
 
 We use `mongoexport` to export a collection from MongoDB into a file, where each line is a JSON object.
@@ -13,7 +15,8 @@ This service then pops each line, extracts a required unique ID field for the Re
 
 For example we have `place_id` in the JSON object, and wish to store the document using the key `place:${id}:json`
 
-This JSON is intended to be export to file using https://github.com/evanx/refile
+This JSON is intended to be exported to disk using https://github.com/evanx/re8, and served using Nginx.
+
 
 ## Config spec
 
