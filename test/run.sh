@@ -31,10 +31,11 @@ removeNetwork() {
   redisHost=`docker inspect $redisContainer |
       grep '"IPAddress":' | tail -1 | sed 's/.*"\([0-9\.]*\)",/\1/'`
   sleep 1
-  redis-cli lpush resplit:q '{
+  redis-cli -h $redisHost lpush resplit:q '{
     "place_id": "ChIJV3iUI-PPdkgRGA7v4bhZPlU",
     "formatted_address": "Blenheim Palace, Woodstock OX20 1PP, UK"
   }'
+  redis-cli -h $redisHost keys '*'
   docker build -t reimport https://github.com/evanx/reimport.git
   docker run --name reimport-instance --rm -i \
     --network=reimport-network \
