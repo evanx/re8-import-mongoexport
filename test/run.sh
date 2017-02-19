@@ -49,10 +49,14 @@ removeNetwork() {
     reimport
   sleep 2
   redis-cli -h $redisHost keys '*'
-  redis-cli -h $redisHost llen resplit:q | grep ^0$
-  redis-cli -h $redisHost llen busy:q | grep ^0$
-  redis-cli -h $redisHost llen re8:key:q | grep ^1$
-  redis-cli -h $redisHost lindex re8:key:q 0
+  redis-cli -h $redisHost llen resplit:q |
+    grep ^0$
+  redis-cli -h $redisHost llen busy:q |
+    grep ^0$
+  redis-cli -h $redisHost llen re8:key:q |
+    grep ^1$
+  redis-cli -h $redisHost lindex re8:key:q 0 |
+    grep '^place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json$'
   docker rm -f $redisName
   docker network rm $network
   echo 'OK'
