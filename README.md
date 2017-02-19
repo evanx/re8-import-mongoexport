@@ -23,7 +23,7 @@ This JSON is intended to be exported to disk using https://github.com/evanx/re8,
 See `lib/spec.js` https://github.com/evanx/reimport/blob/master/lib/spec.js
 ```javascript
 module.exports = {
-    description: 'Containerizable utility to import mongoexport file into Redis.',
+    description: 'Containerizable utility to import JSON into Redis.',
     required: {
         redisHost: {
             description: 'the Redis host',
