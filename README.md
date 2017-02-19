@@ -157,9 +157,16 @@ docker run --name reimport-instance --rm -i \
 
 We check the lengths of the various queues:
 ```
-redis-cli -h $redisHost llen resplit:q | grep ^0$
-redis-cli -h $redisHost llen busy:q | grep ^0$
-redis-cli -h $redisHost llen re8:key:q | grep ^1$
+redis-cli -h $redisHost llen resplit:q |
+  grep ^0$
+redis-cli -h $redisHost llen busy:q |
+  grep ^0$
+redis-cli -h $redisHost llen re8:key:q |
+  grep ^1$
+redis-cli -h $redisHost lindex re8:key:q 0 |
+  grep '^place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json$'
+redis-cli -h $redisHost get 'place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json' |
+    grep 'Blenheim Palace'
 ```
 
 We check that the key is pushed to the output queue:
