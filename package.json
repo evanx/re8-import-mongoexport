@@ -10,7 +10,6 @@
   "author": "@evanxsummers",
   "license": "ISC",
   "dependencies": {
-    "cli-color": "^1.1.0",
     "redis-app-rpf": "^0.5.2"
   },
   "devDependencies": {
