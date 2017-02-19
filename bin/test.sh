@@ -39,9 +39,12 @@ removeNetwork() {
   docker run --name re8-import-instance --rm -i \
     --network=re8-import-network \
     -e host=$redisHost \
+    -e idKey=placeId \
+    -e keyTemplate=place:{id}:json \
     -e inq=resplit:q \
     -e busyq=busy:q \
     -e outq=re8:key:q \
+    -e popTimeout=1 \
     re8-import
   sleep 2
   redis-cli -h $redisHost keys '*'
