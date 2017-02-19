@@ -171,12 +171,16 @@ redis-cli -h $redisHost get 'place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json' |
 
 We check that the key is pushed to the output queue:
 ```
-redis-cli -h $redisHost lindex re8:key:q 0
++ redis-cli -h 172.27.0.2 lindex re8:key:q 0
+place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json
 ```
 
 ```
 evan@dijkstra:~/reimport$ sh test/demo.sh
 ...
++ redis-cli -h 172.27.0.2 get place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json
++ grep formatted_address
+    "formatted_address": "Blenheim Palace, Woodstock OX20 1PP, UK"
 ```
 
 #### Teardown

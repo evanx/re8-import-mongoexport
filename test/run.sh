@@ -59,7 +59,7 @@ removeNetwork() {
   redis-cli -h $redisHost lindex re8:key:q 0 |
     grep "^place:$placeId:json$"
   redis-cli -h $redisHost get "place:$placeId:json" |
-    grep 'Blenheim Palace'
+    grep 'formatted_address'
   docker rm -f $redisName
   docker network rm $network
   echo 'OK'
