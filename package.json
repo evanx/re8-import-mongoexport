@@ -10,7 +10,7 @@
   "author": "@evanxsummers",
   "license": "ISC",
   "dependencies": {
-    "redis-app-rpf": "^0.5.2"
+    "redis-app-rpf": "^0.6.0"
   },
   "devDependencies": {
     "eslint": "^3.12.2"
