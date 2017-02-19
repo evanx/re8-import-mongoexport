@@ -3,7 +3,7 @@
 
 Containerizable utility to import Mongo data into Redis.
 
-<img src="https://raw.githubusercontent.com/evanx/resplit/master/docs/readme/main.png"/>
+<img src="https://raw.githubusercontent.com/evanx/reimport/master/docs/readme/main.png"/>
 
 ## Use case
 
