@@ -31,6 +31,7 @@ removeNetwork() {
   redisHost=`docker inspect $redisContainer |
       grep '"IPAddress":' | tail -1 | sed 's/.*"\([0-9\.]*\)",/\1/'`
   sleep 1
+  placeId='ChIJV3iUI-PPdkgRGA7v4bhZPlU'
   redis-cli -h $redisHost lpush resplit:q '{
     "place_id": "ChIJV3iUI-PPdkgRGA7v4bhZPlU",
     "formatted_address": "Blenheim Palace, Woodstock OX20 1PP, UK"
@@ -56,7 +57,9 @@ removeNetwork() {
   redis-cli -h $redisHost llen re8:key:q |
     grep ^1$
   redis-cli -h $redisHost lindex re8:key:q 0 |
-    grep '^place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json$'
+    grep "^place:$placeId:json$"
+  redis-cli -h $redisHost get "place:$placeId:json" |
+    grep 'Blenheim Palace'
   docker rm -f $redisName
   docker network rm $network
   echo 'OK'
