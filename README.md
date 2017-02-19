@@ -136,16 +136,21 @@ docker build -t re8-import-mongoexport https://github.com/evanx/re8-import-mongo
 
 We interactively run the service on our test Redis container:
 ```
+docker build -t re8-import https://github.com/evanx/re8-import-mongoexport.git
 docker run --name re8-import-instance --rm -i \
   --network=re8-import-network \
   -e host=$redisHost \
-  -e inq=in:q \
+  -e inq=resplit:q \
   -e busyq=busy:q \
-  -e outqs=out1:q,out2:q \
-  re8-import-mongoexport
+  -e outq=re8:key:q \
+  re8-import
 ```
 
 #### Verify results
+
+We print results:
+```
+```
 
 ```
 evan@dijkstra:~/re8-import-mongoexport$ sh test/demo.sh
