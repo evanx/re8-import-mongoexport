@@ -33,7 +33,7 @@ module.exports = {
             description: 'the Redis port',
             default: 6379
         },
-        idKey: {
+        idName: {
             description: 'the ID key',
             example: 'place_id'
         },
@@ -145,7 +145,7 @@ docker build -t reimport https://github.com/evanx/reimport.git
 docker run --name reimport-instance --rm -i \
   --network=reimport-network \
   -e redisHost=$redisHost \
-  -e idKey=place_id \
+  -e idName=place_id \
   -e keyTemplate=place:{id}:json \
   -e inq=resplit:q \
   -e busyq=busy:q \
@@ -207,7 +207,7 @@ while (true) {
         break;
     }
     const object = JSON.parse(item);
-    const id = object[config.idKey];
+    const id = object[config.idName];
     asserto({id});
     const key = config.keyTemplate.replace(/{id}/, id);
     logger.debug({id, key});

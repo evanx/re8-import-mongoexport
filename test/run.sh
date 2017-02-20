@@ -41,7 +41,7 @@ removeNetwork() {
   docker run --name reimport-instance --rm -i \
     --network=reimport-network \
     -e redisHost=$redisHost \
-    -e idKey=place_id \
+    -e idName=place_id \
     -e keyTemplate=place:{id}:json \
     -e inq=resplit:q \
     -e busyq=busy:q \
