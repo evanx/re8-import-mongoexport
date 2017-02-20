@@ -11,7 +11,7 @@ We use `mongoexport` to export a collection from MongoDB into a file, where each
 
 We stream each line into a Redis list using https://github.com/evanx/resplit
 
-This service then pops each line, extracts a required unique ID field for the Redis key, and sets the JSON document in Redis according to a Redis key template with `{id}`
+This service then pops each line, extracts a required unique ID field for the Redis key, and sets the JSON document in Redis.
 
 For example we have `place_id` in the JSON object, and wish to store the document using the key `place:${id}:json`
 
@@ -34,12 +34,12 @@ module.exports = {
             default: 6379
         },
         idName: {
-            description: 'the ID key',
+            description: 'the ID property name',
             example: 'place_id'
         },
-        keyTemplate: {
-            description: 'the Redis key template',
-            example: 'place:{id}:json'
+        namespace: {
+            description: 'the Redis key namespace',
+            example: 'place'
         },
         inq: {
             description: 'the queue to import',
@@ -146,7 +146,7 @@ docker run --name reimport-instance --rm -i \
   --network=reimport-network \
   -e redisHost=$redisHost \
   -e idName=place_id \
-  -e keyTemplate=place:{id}:json \
+  -e namespace=place \
   -e inq=resplit:q \
   -e busyq=busy:q \
   -e outq=re8:key:q \

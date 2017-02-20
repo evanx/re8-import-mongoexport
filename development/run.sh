@@ -12,7 +12,7 @@ redis-cli lpush 'test:reimport:resplit:q' '{
 redisHost=localhost \
 redisPort=6379 \
 idName=place_id \
-keyTemplate=place:{id}:json \
+namespace=place \
 inq=test:reimport:resplit:q \
 busyq=test:reimport:busy:q \
 outq=test:reimport:re8:key:q \

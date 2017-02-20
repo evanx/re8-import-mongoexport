@@ -42,7 +42,7 @@ removeNetwork() {
     --network=reimport-network \
     -e redisHost=$redisHost \
     -e idName=place_id \
-    -e keyTemplate=place:{id}:json \
+    -e namespace=place \
     -e inq=resplit:q \
     -e busyq=busy:q \
     -e outq=re8:key:q \
