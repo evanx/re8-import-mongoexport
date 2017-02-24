@@ -15,7 +15,7 @@ This service then pops each line, extracts a required unique ID field for the Re
 
 For example we have `place_id` in the JSON object, and wish to store the document using the key `place:${id}:json`
 
-This JSON is intended to be exported to disk using https://github.com/evanx/re8, and served using Nginx.
+This JSON is intended to be exported to disk using https://github.com/evanx/refile, and served using Nginx.
 
 
 ## Config spec
@@ -51,7 +51,7 @@ module.exports = {
         },
         outq: {
             description: 'the output key queue',
-            example: 're8:key:q'
+            example: 'refile:key:q'
         },
         popTimeout: {
             description: 'the timeout for brpoplpush',
@@ -149,7 +149,7 @@ docker run --name reimport-instance --rm -i \
   -e namespace=place \
   -e inq=resplit:q \
   -e busyq=busy:q \
-  -e outq=re8:key:q \
+  -e outq=refile:key:q \
   reimport
 ```
 
@@ -161,9 +161,9 @@ redis-cli -h $redisHost llen resplit:q |
   grep ^0$
 redis-cli -h $redisHost llen busy:q |
   grep ^0$
-redis-cli -h $redisHost llen re8:key:q |
+redis-cli -h $redisHost llen refile:key:q |
   grep ^1$
-redis-cli -h $redisHost lindex re8:key:q 0 |
+redis-cli -h $redisHost lindex refile:key:q 0 |
   grep '^place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json$'
 redis-cli -h $redisHost get 'place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json' |
     grep 'Blenheim Palace'
@@ -171,7 +171,7 @@ redis-cli -h $redisHost get 'place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json' |
 
 We check that the key is pushed to the output queue:
 ```
-+ redis-cli -h 172.27.0.2 lindex re8:key:q 0
++ redis-cli -h 172.27.0.2 lindex refile:key:q 0
 place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json
 ```
 
