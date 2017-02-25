@@ -1,6 +1,6 @@
 {
   "name": "reimport",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Containerizable utility to import Mongo data into Redis.",
   "main": "lib/index.js",
   "scripts": {
@@ -10,14 +10,15 @@
   "author": "@evanxsummers",
   "license": "ISC",
   "dependencies": {
-    "redis-app-rpf": "^0.6.0"
+    "app-bin": "^0.1.1",
+    "redis-app-rpf": "^0.6.16"
   },
   "devDependencies": {
     "eslint": "^3.12.2"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/evanx/reimport.git"
+    "url": "https://github.com/evanx/reimport.git"
   },
   "bugs": {
     "url": "https://github.com/evanx/reimport/issues"

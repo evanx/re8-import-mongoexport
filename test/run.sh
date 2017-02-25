@@ -57,8 +57,8 @@ removeNetwork() {
   redis-cli -h $redisHost llen re8:key:q |
     grep ^1$
   redis-cli -h $redisHost lindex re8:key:q 0 |
-    grep "^place:$placeId:json$"
-  redis-cli -h $redisHost get "place:$placeId:json" |
+    grep "^place:$placeId:j$"
+  redis-cli -h $redisHost get "place:$placeId:j" |
     grep 'formatted_address'
   docker rm -f $redisName
   docker network rm $network

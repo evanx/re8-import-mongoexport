@@ -13,7 +13,7 @@ We stream each line into a Redis list using https://github.com/evanx/resplit
 
 This service then pops each line, extracts a required unique ID field for the Redis key, and sets the JSON document in Redis.
 
-For example we have `place_id` in the JSON object, and wish to store the document using the key `place:${id}:json`
+For example we have `place_id` in the JSON object, and wish to store the document using the key `place:${id}:j`
 
 This JSON is intended to be exported to disk using https://github.com/evanx/refile, and served using Nginx.
 
@@ -164,21 +164,21 @@ redis-cli -h $redisHost llen busy:q |
 redis-cli -h $redisHost llen refile:key:q |
   grep ^1$
 redis-cli -h $redisHost lindex refile:key:q 0 |
-  grep '^place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json$'
-redis-cli -h $redisHost get 'place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json' |
+  grep '^place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:j$'
+redis-cli -h $redisHost get 'place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:j' |
     grep 'Blenheim Palace'
 ```
 
 We check that the key is pushed to the output queue:
 ```
 + redis-cli -h 172.27.0.2 lindex refile:key:q 0
-place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json
+place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:j
 ```
 
 ```
 evan@dijkstra:~/reimport$ sh test/demo.sh
 ...
-+ redis-cli -h 172.27.0.2 get place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:json
++ redis-cli -h 172.27.0.2 get place:ChIJV3iUI-PPdkgRGA7v4bhZPlU:j
 + grep formatted_address
     "formatted_address": "Blenheim Palace, Woodstock OX20 1PP, UK"
 ```
