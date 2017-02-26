@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "app-bin": "^0.1.1",
-    "redis-app-rpf": "^0.6.8"
+    "redis-app-rpf": "^0.6.9"
   },
   "devDependencies": {
     "eslint": "^3.12.2"
