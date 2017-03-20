@@ -11,11 +11,14 @@ redis-cli lpush 'test:reimport:resplit:q' '{
 
 redisHost=localhost \
 redisPort=6379 \
+redisNamespace=reimport \
 idName=place_id \
-namespace=place \
-inq=test:reimport:resplit:q \
-busyq=test:reimport:busy:q \
-outq=test:reimport:re8:key:q \
+idNamespace=place \
+inQ=test:reimport:resplit:q \
+busyQ=test:reimport:busy:q \
+keyQ=test:reimport:key:q \
+idQ=test:reimport:id:q \
+idS=test:reimport:id:s \
 popTimeout=10 \
 npm start
 

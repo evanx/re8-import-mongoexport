@@ -33,23 +33,27 @@ module.exports = {
             description: 'the Redis port',
             default: 6379
         },
+        redisNamespace: {
+            description: 'the Redis key namespace',
+            example: 'reimport'
+        },
         idName: {
             description: 'the ID property name',
             example: 'place_id'
         },
-        namespace: {
-            description: 'the Redis key namespace',
+        idNamespace: {
+            description: 'the Redis ID namespace',
             example: 'place'
         },
-        inq: {
+        inQ: {
             description: 'the queue to import',
             example: 'resplit:q'
         },
-        busyq: {
+        busyQ: {
             description: 'the pending list for brpoplpush',
             example: 'reimport:busy:q'
         },
-        outq: {
+        keyQ: {
             description: 'the output key queue',
             example: 'refile:key:q'
         },
@@ -69,15 +73,7 @@ module.exports = {
 
 ### Appication archetype
 
-Incidently `lib/index.js` uses the `redis-app-rpf` application archetype.
-```
-require('redis-app-rpf')(require('./spec'), require('./main'));
-```
-where we extract the `config` from `process.env` according to the `spec` and invoke our `main` function.
-
-This provides lifecycle boilerplate reused across similar applications.
-
-See https://github.com/evanx/redis-app-rpf
+See https://github.com/evanx/redis-app
 
 
 ## Docker
@@ -89,7 +85,7 @@ docker build -t reimport https://github.com/evanx/reimport.git
 using https://github.com/evanx/reimport/blob/master/Dockerfile
 
 ```
-FROM node:7.5.0
+FROM mhart/alpine-node:latest
 ADD package.json .
 RUN npm install
 ADD lib lib
@@ -146,10 +142,10 @@ docker run --name reimport-instance --rm -i \
   --network=reimport-network \
   -e redisHost=$redisHost \
   -e idName=place_id \
-  -e namespace=place \
-  -e inq=resplit:q \
-  -e busyq=busy:q \
-  -e outq=refile:key:q \
+  -e idNamespace=place \
+  -e inQ=resplit:q \
+  -e busyQ=busy:q \
+  -e keyQ=refile:key:q \
   reimport
 ```
 
@@ -196,14 +192,12 @@ See `lib/main.js`
 
 ```javascript
 while (true) {
-    logger.debug('brpoplpush', config.inq, config.busyq, config.popTimeout);
-    const item = await client.brpoplpushAsync(config.inq, config.busyq, config.popTimeout);
-    logger.debug('popped', config.inq, config.busyq, item);
+    const item = await client.brpoplpushAsync(config.inQ, config.busyQ, config.popTimeout);
     if (!item) {
         break;
     }
     if (item === 'exit') {
-        await client.lrem(config.busyq, 1, item);
+        await client.lrem(config.busyQ, 1, item);
         break;
     }
     const object = JSON.parse(item);
@@ -213,23 +207,15 @@ while (true) {
     logger.debug({id, key});
     await multiExecAsync(client, multi => {
         multi.set(key, item);
-        multi.lpush(config.outq, key);
-        multi.lrem(config.busyq, 1, item);
+        multi.lpush(config.keyQ, key);
+        multi.lrem(config.busyQ, 1, item);
     });
 }
 ```
 
 ### Appication archetype
 
-Incidently `lib/index.js` uses the `redis-app-rpf` application archetype.
-```
-require('redis-app-rpf')(require('./spec'), require('./main'));
-```
-where we extract the `config` from `process.env` according to the `spec` and invoke our `main` function.
-
-This provides lifecycle boilerplate to reuse across similar applications.
-
-See https://github.com/evanx/redis-app-rpf.
+See https://github.com/evanx/redis-app
 
 <hr>
 https://twitter.com/@evanxsummers

@@ -1,4 +1,4 @@
-FROM mhart/alpine-node
+FROM mhart/alpine-node:latest
 ADD package.json .
 RUN npm install
 ADD lib lib
